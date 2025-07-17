@@ -36,14 +36,14 @@ Qualtrics.SurveyEngine.addOnload(function()
 	Qualtrics.SurveyEngine.setEmbeddedData('validateqn4', 'Yes');
 	// (make sure to delete these embeds later)
 	
-	var bedit = document.getElementsByClassName("QuestionBody")[0];
-	bedit.innerHTML= markQuestions(4, ['What is a cyclops?','How many wheels on a unicycle?','print(jar)', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'], ['One eye','One','jar', 'Yes']);
 });
 
 Qualtrics.SurveyEngine.addOnReady(function()
 {
 	/*Place your JavaScript here to run when the page is fully displayed*/
 
+	var bedit = document.getElementsByClassName("QuestionBody")[0];
+	bedit.innerHTML = markQuestions(4, ['What is a cyclops?', 'How many wheels on a unicycle?', 'print(jar)', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'], ['One eye', 'One', 'jar', 'Yes']);
 });
 
 Qualtrics.SurveyEngine.addOnUnload(function()

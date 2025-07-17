@@ -8,6 +8,12 @@ var realTimeoutBiasExponent = 4; // Distributes bias towards minimum rather than
 var realTimeout = fakeTimeout; // Set to the computed timeout
 
 Qualtrics.SurveyEngine.addOnload(function () {
+	
+});
+
+Qualtrics.SurveyEngine.addOnReady(function () {
+	/*Place your JavaScript here to run when the page is fully displayed*/
+
 	// Disable the button so the user cannot avoid the wait!
 	this.disableNextButton();
 
@@ -38,11 +44,6 @@ Qualtrics.SurveyEngine.addOnload(function () {
 	var qedit = document.getElementsByClassName("QuestionText")[0];
 	qedit.innerHTML = '<div>Waiting for other player...</div>';
 	qedit.appendChild(loadernode);
-});
-
-Qualtrics.SurveyEngine.addOnReady(function () {
-	/*Place your JavaScript here to run when the page is fully displayed*/
-
 });
 
 Qualtrics.SurveyEngine.addOnUnload(function () {

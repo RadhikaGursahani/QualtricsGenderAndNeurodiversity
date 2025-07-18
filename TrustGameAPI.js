@@ -204,7 +204,7 @@ var intervalId = 0;
 var timeout = 30;
 var numedit; // The players input
 
-function setupPlayerResponseQuestion() {
+function setupPlayerResponseQuestion(qualtrics) {
 	/*Place your JavaScript here to run when the page is fully displayed*/
 
 	gamedata = getGameData();
@@ -249,7 +249,7 @@ function setupPlayerResponseQuestion() {
 		tedit.innerHTML = "<b>Timeout in " + timeout + ".</b>";
 
 		if (timeout <= 0) {
-			this.clickNextButton();
+			qualtrics.clickNextButton();
 		}
 	}, 1000);
 }

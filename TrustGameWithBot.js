@@ -21,6 +21,8 @@ function updateGameData(gamedata) {
 	Qualtrics.SurveyEngine.setEmbeddedData('botstrategy', gamedata.botstrategy);
 	Qualtrics.SurveyEngine.setEmbeddedData('roundnumber', gamedata.roundnumber);
 	Qualtrics.SurveyEngine.setEmbeddedData('lastplay', gamedata.lastplay); //not saved, indicates last transaction with multiplier. For semantics only
+	Qualtrics.SurveyEngine.setEmbeddedData('botgender', gamedata.botgender);
+	Qualtrics.SurveyEngine.setEmbeddedData('botneuro', gamedata.botneuro);
 }
 
 // Call to create the game variables
@@ -33,6 +35,8 @@ function SetupGame() {
 		botstrategy: 0,
 		roundnumber: 0,
 		lastplay: NaN,
+		botgender: 0, // indeterminate
+		botneuro: 0 // indeterminate
 	};
 
 	updateGameData(gamedata);
@@ -48,6 +52,8 @@ function getGameData() {
 		botstrategy: 0,
 		roundnumber: 0,
 		lastplay: NaN,
+		botgender: 0, // indeterminate
+		botneuro: 0 // indeterminate
 	};
 
 	// Cached variables, do NOT get stored in the responses
@@ -58,6 +64,8 @@ function getGameData() {
 	gamedata.botstrategy = Qualtrics.SurveyEngine.getEmbeddedData('botstrategy');
 	gamedata.roundnumber = Qualtrics.SurveyEngine.getEmbeddedData('roundnumber');
 	gamedata.lastplay = Qualtrics.SurveyEngine.getEmbeddedData('lastplay');
+	gamedata.botgender = Qualtrics.SurveyEngine.getEmbeddedData('botgender');
+	gamedata.botneuro = Qualtrics.SurveyEngine.getEmbeddedData('botneuro');
 
 	return gamedata;
 }
@@ -72,6 +80,8 @@ function nextGameRound(gamedata, gamenumber) {
 	monolith['pt' + gamenumber] = gamedata.playertotal;
 	monolith['bt' + gamenumber] = gamedata.bottotal;
 	monolith['bs' + gamenumber] = gamedata.botstrategy;
+	monolith['bg' + gamenumber] = gamedata.botgender;
+	monolith['bn' + gamenumber] = gamedata.botneuro;
 	Qualtrics.SurveyEngine.setEmbeddedData('gamedata', JSON.stringify(monolith));
 
 	gamedata.roundnumber = gamedata.roundnumber + 1;
@@ -83,6 +93,13 @@ function nextGameRound(gamedata, gamenumber) {
 function getBotType(botID) {
 	const typenames = ["unspecified-random", "tit-for-tat", "random-return", "always-selfish", "generous-strategy"];
 	return typenames[botID];
+}
+
+function getBotPersonaDescription(botgenderID, botneuroID) {
+	const gendernames = ["unknown", "male", "female", "non-binary"];
+	const neurodescs = [" unknown ASD/ADHD identity status", "out ASD and/or ADHD", " ASD and/or ADHD", " ASD and ADHD", " ASD", " ADHD"];
+
+	return "gender identity is " + gendernames[botgenderID] + " and with" + neurodescs[botneuroID] + ".";
 }
 
 // Lets the bot provide a decision in how much to transfer
@@ -186,7 +203,6 @@ function confirmResponse(playertype, gamedata) {
 var intervalId = 0;
 var timeout = 30;
 var numedit; // The players input
-
 Qualtrics.SurveyEngine.addOnload(function () {
 	/*Place your JavaScript here to run when the page loads*/
 
@@ -206,6 +222,9 @@ Qualtrics.SurveyEngine.addOnReady(function () {
 		this.value = Math.round(Math.max(Math.min(this.max, this.value), this.min));
 	};
 
+	const playerpersonatextnode = document.createElement("p");
+	playerpersonatextnode.innerHTML = "<p><br></br>The other Player's " + getBotPersonaDescription(gamedata.botgender, gamedata.botneuro) + "</p>";
+
 	const playergametextnode = document.createElement("p");
 	playergametextnode.innerHTML = "<p>You have &pound;" + gamedata.playertotal + " and they have &pound;" + gamedata.bottotal + ".</p>";
 
@@ -220,6 +239,7 @@ Qualtrics.SurveyEngine.addOnReady(function () {
 	}
 
 	bedit.appendChild(playergametextnode);
+	bedit.appendChild(playerpersonatextnode);
 
 	// Timeout text
 	const timeouttextnode = document.createElement("div");

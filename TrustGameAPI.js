@@ -199,13 +199,23 @@ function confirmResponse(playertype, gamedata) {
 	}
 }
 
-// Time the player to make a move
-var intervalId = 0;
-var timeout = 30;
+// Available globals
+var intervalId;
+var timeout;
 var numedit; // The players input
+var fakeTimeout; // Fake timer instance start value
+var realTimeoutMin;
+var realTimeoutMax;
+var realTimeoutBiasExponent; // Distributes bias towards minimum rather than maximum
+var realTimeout; // Set to the computed timeout
 
+// Standard player response in the game
 function setupPlayerResponseQuestion(qualtrics) {
 	/*Place your JavaScript here to run when the page is fully displayed*/
+
+	// Set globals
+	intervalId = 0;
+	timeout = 30; // Time the player to make a move
 
 	gamedata = getGameData();
 
@@ -256,4 +266,56 @@ function setupPlayerResponseQuestion(qualtrics) {
 
 function cleanupPlayerResponseQuestion() {
 	clearInterval(intervalId);
+}
+
+// Standard wait for player to connect in game
+function setupPlayerConnectQuestion(qualtrics) {
+	/*Place your JavaScript here to run when the page is fully displayed*/
+
+	// Set globals
+	intervalId = 0; // Keep to kill the fake timer instance
+	fakeTimeout = 30; // Fake timer instance start value
+	realTimeoutMin = 5;
+	realTimeoutMax = 30;
+	realTimeoutBiasExponent = 2; // Distributes bias towards minimum rather than maximum
+	realTimeout = fakeTimeout; // Set to the computed timeout
+
+	// Disable the button so the user cannot avoid the wait!
+	qualtrics.disableNextButton();
+
+	// Upkeep a fake timeout label
+	var bedit = document.getElementsByClassName("QuestionBody")[0];
+	bedit.innerHTML = "<div>Timeout in " + fakeTimeout + ".</div>";
+	intervalId = setInterval(() => {
+		fakeTimeout = fakeTimeout - 1;
+		var bedit = document.getElementsByClassName("QuestionBody")[0];
+		bedit.innerHTML = "<div>Timeout in " + fakeTimeout + ".</div>";
+	}, 1000);
+
+	// Actions to be performed upon the real timeout
+	realTimeout = 1000 * (realTimeoutMin + Math.pow(Math.random(), realTimeoutBiasExponent) * (realTimeoutMax - realTimeoutMin));
+	console.log('Fake timeout - ' + fakeTimeout + '; Real timeout - ' + Math.floor(realTimeout / 1000));
+	setTimeout(() => {
+		qualtrics.clickNextButton();
+	}, realTimeout);
+
+	// Add a loader circle
+	// Based upon https://www.w3schools.com/howto/howto_css_loader.asp
+	const loadernode = document.createElement("div");
+	loadernode.innerHTML = '<div class="loader"></div>';
+	loadernode.style = 'border: 8px solid #f3f3f3; border-top: 8px solid #337ab7; border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite;';
+	loadernode.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: 1000, iterations: Infinity });
+
+	//Set the waiting message
+	var qedit = document.getElementsByClassName("QuestionText")[0];
+	qedit.innerHTML = '<div>Waiting for a player to connect...</div>';
+	qedit.appendChild(loadernode);
+}
+
+function cleanupPlayerConnectQuestion(qualtrics) {
+	/*Place your JavaScript here to run when the page is unloaded*/
+
+	// Clean up
+	clearInterval(intervalId);
+	qualtrics.enableNextButton();
 }

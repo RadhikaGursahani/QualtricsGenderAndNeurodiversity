@@ -381,7 +381,7 @@ function cleanupGameWelcomeQuestion(qualtrics) {
 
 // Standard round waiting for other player question
 function setupWaitingForPlayerResponseQuestion(qualtrics) {
-	/*Place your JavaScript here to run when the page is unloaded*/
+	/*Place your JavaScript here to run when the page is fully displayed*/
 
 	// Set globals
 	intervalId = 0; // Keep to kill the fake timer instance
@@ -448,4 +448,12 @@ function cleanupWaitingForPlayerResponseQuestion(qualtrics) {
 
 	// New round!
 	nextGameRound(gamedata, 1);*/
+}
+
+// Standard game over question
+function setupGameOverQuestion() {
+	/*Place your JavaScript here to run when the page is fully displayed*/
+	var bedit = document.getElementsByClassName("QuestionBody")[0];
+	gamedata = getGameData();
+	bedit.innerHTML = "<p>You ended with &pound;" + gamedata.playertotal + " and they ended with &pound;" + gamedata.bottotal + ".</p><br>Please click next to start the next game.";
 }

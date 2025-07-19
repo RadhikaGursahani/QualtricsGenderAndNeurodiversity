@@ -208,6 +208,7 @@ var realTimeoutMin;
 var realTimeoutMax;
 var realTimeoutBiasExponent; // Distributes bias towards minimum rather than maximum
 var realTimeout; // Set to the computed timeout
+var timeout; // Established timeouts
 
 // Standard player response in the game
 function setupPlayerResponseQuestion(qualtrics) {
@@ -316,6 +317,63 @@ function cleanupPlayerConnectQuestion(qualtrics) {
 	/*Place your JavaScript here to run when the page is unloaded*/
 
 	// Clean up
+	clearInterval(intervalId);
+	qualtrics.enableNextButton();
+}
+
+function setupGameWelcomeQuestion(goingfirst, qualtrics) {
+	/*Place your JavaScript here to run when the page is fully displayed*/
+
+	// Set globals
+	intervalId = 0;
+	timeout = 15;
+
+	qualtrics.disableNextButton();
+	gamedata = getGameData();
+
+	const playerpersonatextnode = document.createElement("p");
+	playerpersonatextnode.innerHTML = "<p><br>The information you have on the other Player is that their " + getBotPersonaDescription(gamedata.botgender, gamedata.botneuro) + "</p>";
+	const playergametextnode = document.createElement("p");
+	playergametextnode.innerHTML = "<p>You are starting with &pound;" + gamedata.playertotal + " and they have &pound;" + gamedata.bottotal + ".</p>";
+	if (goingfirst) {
+		playergametextnode.innerHTML = playergametextnode.innerHTML + "<p><br>You will go first, get ready!</p>"; //The other Player will go first!
+	}
+	else {
+		playergametextnode.innerHTML = playergametextnode.innerHTML + "<p><br>The other Player will go first!</p>";
+  }
+
+	var bedit = document.getElementsByClassName("QuestionBody")[0];
+
+	// States the transferred amount by the bot (if they played last round)
+	if (Number.isInteger(gamedata.botcurrent)) {
+		const botresponsegametextnode = document.createElement("p");
+		botresponsegametextnode.innerHTML = "They decided to transfer &pound;" + gamedata.botcurrent + ", this means you received &pound;" + gamedata.lastplay + ".";
+
+		bedit.appendChild(botresponsegametextnode);
+	}
+
+	bedit.appendChild(playergametextnode);
+	bedit.appendChild(playerpersonatextnode);
+
+	// Timeout text
+	const timeouttextnode = document.createElement("div");
+	timeouttextnode.innerHTML = "<div id='timeout-text'><b>Starting in " + timeout + "...</b></div>";
+	bedit.appendChild(timeouttextnode);
+
+	// Progress timeout
+	intervalId = setInterval(() => {
+		timeout = timeout - 1;
+		var tedit = document.getElementById("timeout-text");
+		tedit.innerHTML = "<b>Starting in " + timeout + "...</b>";
+
+		if (timeout <= 0) {
+			qualtrics.clickNextButton();
+		}
+	}, 1000);
+}
+
+function cleanupGameWelcomeQuestion(qualtrics) {
+	/*Place your JavaScript here to run when the page is unloaded*/
 	clearInterval(intervalId);
 	qualtrics.enableNextButton();
 }

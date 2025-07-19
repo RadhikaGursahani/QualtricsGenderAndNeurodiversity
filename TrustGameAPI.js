@@ -131,10 +131,10 @@ function getBotResponse(gamedata) {
 			gamedata.botcurrent = Math.round(Math.random() * gamedata.bottotal);
 			break;
 		case 3: // always-selfish
-			gamedata.botcurrent = Math.round(Math.random() * Math.min(30, gamedata.bottotal));
+			gamedata.botcurrent = Math.round(Math.random() * Math.min(100, gamedata.bottotal));
 			break;
 		case 4: // generous-strategy
-			gamedata.botcurrent = Math.round((0.7 + 0.3 * Math.random()) * gamedata.bottotal);
+			gamedata.botcurrent = Math.round((0.4 + 0.2 * Math.random()) * gamedata.bottotal);
 			break;
 	}
 	console.log('Test! The bot responded with ' + gamedata.botcurrent);
@@ -174,7 +174,7 @@ function confirmResponse(playertype, gamedata) {
 		gamedata.lastplay = thiscurrent * 3; // First round triple
 	}
 	else {
-		gamedata.lastplay = thiscurrent; // Other rounds
+		gamedata.lastplay = thiscurrent * 2; // Other rounds double
 	}
 	console.log(gamedata.roundnumber);
 	console.log(!Number.isInteger(theircurrent));
@@ -277,7 +277,7 @@ function setupPlayerConnectQuestion(qualtrics) {
 	intervalId = 0; // Keep to kill the fake timer instance
 	fakeTimeout = 30; // Fake timer instance start value
 	realTimeoutMin = 5;
-	realTimeoutMax = 30;
+	realTimeoutMax = 25;
 	realTimeoutBiasExponent = 2; // Distributes bias towards minimum rather than maximum
 	realTimeout = fakeTimeout; // Set to the computed timeout
 
@@ -327,7 +327,7 @@ function setupGameWelcomeQuestion(goingfirst, qualtrics) {
 
 	// Set globals
 	intervalId = 0;
-	timeout = 15;
+	timeout = 10;
 
 	qualtrics.disableNextButton();
 	gamedata = getGameData();
@@ -388,7 +388,7 @@ function setupWaitingForPlayerResponseQuestion(qualtrics) {
 	fakeTimeout = 30; // Fake timer instance start value
 	realTimeoutMin = 5;
 	realTimeoutMax = 15;
-	realTimeoutBiasExponent = 3; // Distributes bias towards minimum rather than maximum
+	realTimeoutBiasExponent = 4; // Distributes bias towards minimum rather than maximum
 	realTimeout = fakeTimeout; // Set to the computed timeout
 
 	// Disable the button so the user cannot avoid the wait!

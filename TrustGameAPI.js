@@ -240,7 +240,7 @@ function setupPlayerResponseQuestion(qualtrics) {
 	// States the transferred amount by the bot (if they played last round)
 	if (Number.isInteger(gamedata.botcurrent)) {
 		const botresponsegametextnode = document.createElement("p");
-		botresponsegametextnode.innerHTML = "<p>Last round they decided to transfer &pound;" + gamedata.botcurrent + ", this means you received &pound;" + gamedata.lastplay + ".</p>";
+		botresponsegametextnode.innerHTML = "<p>They decided to transfer &pound;" + gamedata.botcurrent + ", this means you received &pound;" + gamedata.lastplay + ".</p>";
 
 		bedit.appendChild(botresponsegametextnode);
 	}
@@ -321,6 +321,7 @@ function cleanupPlayerConnectQuestion(qualtrics) {
 	qualtrics.enableNextButton();
 }
 
+// Standard game start display
 function setupGameWelcomeQuestion(goingfirst, qualtrics) {
 	/*Place your JavaScript here to run when the page is fully displayed*/
 
@@ -376,4 +377,75 @@ function cleanupGameWelcomeQuestion(qualtrics) {
 	/*Place your JavaScript here to run when the page is unloaded*/
 	clearInterval(intervalId);
 	qualtrics.enableNextButton();
+}
+
+// Standard round waiting for other player question
+function setupWaitingForPlayerResponseQuestion(qualtrics) {
+	/*Place your JavaScript here to run when the page is unloaded*/
+
+	// Set globals
+	intervalId = 0; // Keep to kill the fake timer instance
+	fakeTimeout = 30; // Fake timer instance start value
+	realTimeoutMin = 5;
+	realTimeoutMax = 15;
+	realTimeoutBiasExponent = 3; // Distributes bias towards minimum rather than maximum
+	realTimeout = fakeTimeout; // Set to the computed timeout
+
+	// Disable the button so the user cannot avoid the wait!
+	qualtrics.disableNextButton();
+
+	// Upkeep a fake timeout label
+	var bedit = document.getElementsByClassName("QuestionBody")[0];
+	const timeoutnode = document.createElement("div");
+	timeoutnode.innerHTML = "Timeout in " + fakeTimeout + ".";
+	intervalId = setInterval(() => {
+		fakeTimeout = fakeTimeout - 1;
+		timeoutnode.innerHTML = "Timeout in " + fakeTimeout + ".";
+	}, 1000);
+
+	const descriptionnode = document.createElement("div");
+	gamedata = getGameData();
+	if (Number.isInteger(gamedata.playercurrent)) {
+		descriptionnode.innerHTML = "<p>Last round you transferred &pound;" + gamedata.playercurrent + ", this means they received &pound;" + gamedata.lastplay + ".</p>";
+	}
+	descriptionnode.innerHTML = descriptionnode.innerHTML + "<p>You currently have &pound;" + gamedata.playertotal + " and they have &pound;" + gamedata.bottotal + ".</p>";
+	descriptionnode.innerHTML = descriptionnode.innerHTML + "<p><br></br>The other Player's " + getBotPersonaDescription(gamedata.botgender, gamedata.botneuro) + "</p>";
+
+
+	bedit.appendChild(descriptionnode);
+	bedit.appendChild(timeoutnode);
+
+	// Actions to be performed upon the real timeout
+	realTimeout = 1000 * (realTimeoutMin + Math.pow(Math.random(), realTimeoutBiasExponent) * (realTimeoutMax - realTimeoutMin));
+	console.log('Fake timeout - ' + fakeTimeout + '; Real timeout - ' + Math.floor(realTimeout / 1000));
+	setTimeout(() => {
+		qualtrics.clickNextButton();
+	}, realTimeout);
+
+	// Add a loader circle
+	// Based upon https://www.w3schools.com/howto/howto_css_loader.asp
+	const loadernode = document.createElement("div");
+	loadernode.innerHTML = '<div class="loader"></div>';
+	loadernode.style = 'border: 8px solid #f3f3f3; border-top: 8px solid #337ab7; border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite;';
+	loadernode.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: 1000, iterations: Infinity });
+
+	//Set the waiting message
+	var qedit = document.getElementsByClassName("QuestionText")[0];
+	qedit.innerHTML = '<div>Waiting for the other player...</div>';
+	qedit.appendChild(loadernode);
+}
+
+function cleanupWaitingForPlayerResponseQuestion(qualtrics) {
+	/*Place your JavaScript here to run when the page is unloaded*/
+
+	// Clean up
+	clearInterval(intervalId);
+	qualtrics.enableNextButton();
+
+	// Player went, make bot go then end round
+	/*getBotResponse(gamedata);
+	confirmResponse('bot', gamedata);
+
+	// New round!
+	nextGameRound(gamedata, 1);*/
 }

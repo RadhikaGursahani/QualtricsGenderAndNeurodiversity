@@ -261,6 +261,8 @@ function setupPlayerResponseQuestion(qualtrics) {
 
 		if (timeout <= 0) {
 			qualtrics.clickNextButton();
+			clearInterval(intervalId);
+			intervalId = 0;
 		}
 	}, 1000);
 }
@@ -369,6 +371,8 @@ function setupGameWelcomeQuestion(goingfirst, qualtrics) {
 
 		if (timeout <= 0) {
 			qualtrics.clickNextButton();
+			clearInterval(intervalId);
+			intervalId = 0;
 		}
 	}, 1000);
 }

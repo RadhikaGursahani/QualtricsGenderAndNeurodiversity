@@ -133,8 +133,13 @@ function getBotResponse(gamedata, finalround = false) {
 	}
 
 	// If it is the final round and strategy is not evil, try to split!
-	if (finalround && currentstrategy != 3) {
-		gamedata.botcurrent = getSplitResponse(gamedata.bottotal, gamedata.playertotal);
+	if (finalround) {
+		if(currentstrategy == 3) { // Always-selfish
+			gamedata.botcurrent = 0; // Evil strategies take as much as possible
+		}
+		else {
+			gamedata.botcurrent = getSplitResponse(gamedata.bottotal, gamedata.playertotal);
+		}
 	}
 	else {
 		switch (currentstrategy) {

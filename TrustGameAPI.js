@@ -102,6 +102,11 @@ function getBotPersonaDescription(botgenderID, botneuroID) {
 	return "gender identity is " + gendernames[botgenderID] + " and with" + neurodescs[botneuroID] + ".";
 }
 
+// Rounds to a human value
+function getRoundedResponse(number) {
+	return Math.round(number / 5) * 5; // Humans working in 5's
+}
+
 // Lets the bot provide a decision in how much to transfer
 function getBotResponse(gamedata) {
 	// Set the bots strategy once per game if ran with random [MAKE SURE TO UPDATE GAMEDATA]
@@ -137,6 +142,7 @@ function getBotResponse(gamedata) {
 			gamedata.botcurrent = Math.round((0.4 + 0.2 * Math.random()) * gamedata.bottotal);
 			break;
 	}
+	gamedata.botcurrent = getRoundedResponse(gamedata.botcurrent); // Round to a human figure
 	console.log('Test! The bot responded with ' + gamedata.botcurrent);
 }
 

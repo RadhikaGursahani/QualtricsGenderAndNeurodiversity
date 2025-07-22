@@ -107,8 +107,15 @@ function getRoundedResponse(number) {
 	return Math.round(number / 5) * 5; // Humans working in 5's
 }
 
+// Returns a value mimicking the human desire to split in the final round
+function getSplitResponse(thiscurrent, theircurrent) {
+	var difference = Math.max(Math.thiscurrent - theircurrent, 0);
+	// The perfect split is to transfer 33% of difference, transfer between 20% to 40%
+	return Math.round(difference * (0.2 + 0.2 * Math.random()));
+}
+
 // Lets the bot provide a decision in how much to transfer
-function getBotResponse(gamedata) {
+function getBotResponse(gamedata, finalround = false) {
 	// Set the bots strategy once per game if ran with random [MAKE SURE TO UPDATE GAMEDATA]
 	if (gamedata.botstrategy == 0) {
 		// Sets the strategy between 1 and 4
@@ -125,7 +132,12 @@ function getBotResponse(gamedata) {
 		currentstrategy = 4;
 	}
 
-	switch (currentstrategy) {
+	// If it is the final round and strategy is not evil, try to split!
+	if (finalround && currentstrategy != 3) {
+		gamedata.botcurrent = getSplitResponse(gamedata.bottotal, gamedata.playertotal);
+	}
+	else {
+		switch (currentstrategy) {
 		default:
 		case 1: // tit-for-tat
 			// Player went first, return same percentage of money
@@ -141,6 +153,7 @@ function getBotResponse(gamedata) {
 		case 4: // generous-strategy
 			gamedata.botcurrent = Math.round((0.4 + 0.2 * Math.random()) * gamedata.bottotal);
 			break;
+		}
 	}
 	gamedata.botcurrent = getRoundedResponse(gamedata.botcurrent); // Round to a human figure
 	console.log('Test! The bot responded with ' + gamedata.botcurrent);

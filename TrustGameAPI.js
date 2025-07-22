@@ -109,7 +109,7 @@ function getRoundedResponse(number) {
 
 // Returns a value mimicking the human desire to split in the final round
 function getSplitResponse(thiscurrent, theircurrent) {
-	var difference = Math.max(Math.thiscurrent - theircurrent, 0);
+	var difference = Math.max(thiscurrent - theircurrent, 0);
 	// The perfect split is to transfer 33% of difference, transfer between 20% to 40%
 	return Math.round(difference * (0.2 + 0.2 * Math.random()));
 }
